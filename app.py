@@ -10,7 +10,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://pokedex-frontend-snowy.vercel.app"])
 
 # Load your CSV
 df = pd.read_csv("pokedex.csv")
