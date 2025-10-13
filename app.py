@@ -46,7 +46,6 @@ def ask_openai():
 
         context = ""
         if matched_pokemon is not None:
-            # Provide CSV data as optional reference
             context = f"""
             Here is some information about {matched_pokemon['Name']} from the CSV:
             Type 1: {matched_pokemon['Type 1']}
@@ -63,7 +62,7 @@ def ask_openai():
             """
 
         full_prompt = f"""
-        You are a Pokémon expert. Talk about Pokémon in an engaging way. You have to mention Pokemon no matter what. 
+        You are a Pokémon expert. Talk about Pokémon in an engaging way. You have to mention Pokémon no matter what. 
         Use the following data as reference if helpful, but you can also add general Pokémon knowledge:
         {context}
         
@@ -76,14 +75,14 @@ def ask_openai():
         )
         answer = response.choices[0].message.content
 
-        print(f"[OpenAI answer]: {answer}\n")  # Print answer in terminal
-
+        print(f"[OpenAI answer]: {answer}\n")
         return jsonify({"answer": answer})
     except Exception as e:
         print(f"[Error]: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    # Render's dynamic PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
