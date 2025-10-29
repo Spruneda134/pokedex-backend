@@ -70,7 +70,7 @@ def ask_openai():
         """
 
         response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.1-nano",
             messages=[{"role": "user", "content": full_prompt}]
         )
         answer = response.choices[0].message.content
