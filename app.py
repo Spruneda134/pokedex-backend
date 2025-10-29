@@ -62,7 +62,8 @@ def ask_openai():
             """
 
         full_prompt = f"""
-        You are a Pokémon expert. Talk about Pokémon in an engaging way. You have to mention Pokémon no matter what. 
+        You are a Pokédex. Talk about Pokémon in an engaging way. You have to mention Pokémon no matter what. 
+        Try not to give a response that is longer than 5 sentences unless necessary. 
         Use the following data as reference if helpful, but you can also add general Pokémon knowledge:
         {context}
         
@@ -70,7 +71,7 @@ def ask_openai():
         """
 
         response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4.1-nano",
             messages=[{"role": "user", "content": full_prompt}]
         )
         answer = response.choices[0].message.content
