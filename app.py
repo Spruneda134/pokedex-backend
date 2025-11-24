@@ -3,10 +3,9 @@ from flask_cors import CORS
 import pandas as pd
 import openai
 import os
-import base64  # <--- 1. Import base64
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables from .env
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -14,6 +13,7 @@ app = Flask(__name__)
 CORS(app, origins=["https://salvador-pokedex.vercel.app"])
 # CORS(app)
 
+# Load your CSV
 df = pd.read_csv("pokedex.csv")
 
 @app.route("/")
@@ -36,9 +36,9 @@ def ask_openai():
         return jsonify({"error": "No prompt provided"}), 400
 
     try:
-        print(f"\n[Prompt received]: {prompt}")
+        print(f"\n[Prompt received]: {prompt}")  # Print prompt in terminal
 
-        # --- CSV Context Logic (Same as before) ---
+        # Check if a Pokémon from CSV is mentioned in the prompt
         matched_pokemon = None
         for name in df["Name"]:
             if name.lower() in prompt.lower():
@@ -55,47 +55,56 @@ def ask_openai():
             HP: {matched_pokemon['HP']}
             Attack: {matched_pokemon['Attack']}
             Defense: {matched_pokemon['Defense']}
+            Sp. Atk: {matched_pokemon['Sp. Atk']}
+            Sp. Def: {matched_pokemon['Sp. Def']}
             Speed: {matched_pokemon['Speed']}
+            Generation: {matched_pokemon['Generation']}
             Legendary: {matched_pokemon['Legendary']}
             """
 
         full_prompt = f"""
-        You are a Pokédex. Talk about Pokémon in an engaging, encyclopedic way. 
-        Try not to give a response that is longer than 5 sentences. 
-        Use the following data as reference if helpful:
+        You are a Pokédex. Talk about Pokémon in an engaging way. You have to mention Pokémon no matter what. 
+        Try not to give a response that is longer than 5 sentences unless necessary. 
+        Use the following data as reference if helpful, but you can also add general Pokémon knowledge:
         {context}
         
         Question: {prompt}
         """
 
-        # 1. Generate Text Response
         response = openai.chat.completions.create(
-            model="gpt-4o-mini", 
+            model="gpt-4.1-nano",
             messages=[{"role": "user", "content": full_prompt}]
         )
         answer = response.choices[0].message.content
+
         print(f"[OpenAI answer]: {answer}\n")
+        return jsonify({"answer": answer})
+    except Exception as e:
+        print(f"[Error]: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 
-        # 2. Generate Audio Response (TTS)
-        speech_response = openai.audio.speech.create(
-            model="tts-1",
-            voice="alloy",
-            input=answer
-        )
+@app.route("/askTest", methods=["POST"])
+def ask_openai_Test():
+    data = request.get_json()
+    prompt = data.get("prompt", "")
+    
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
 
-        # 3. Convert Audio to Base64 to send over JSON
-        # speech_response.content contains the binary audio data
-        audio_base64 = base64.b64encode(speech_response.content).decode('utf-8')
+    try:
+        print(f"\n[Prompt received]: {prompt}") 
 
-        return jsonify({
-            "answer": answer,
-            "audio": audio_base64  # <--- Sending the audio data
-        })
+        answer = "This is a test response from the Pokédex AI, your prompt was: " + prompt
 
+        print(f"[OpenAI answer]: {answer}\n")
+        return jsonify({"answer": answer})
     except Exception as e:
         print(f"[Error]: {e}")
         return jsonify({"error": str(e)}), 500
 
+
 if __name__ == "__main__":
+    # Render's dynamic PORT environment variable
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
