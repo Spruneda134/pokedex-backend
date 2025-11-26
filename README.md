@@ -1,11 +1,8 @@
 # Pokédex Web App
 
-A mobile-first full-stack Pokédex web app that lets users explore and interact with Pokémon data through an AI-powered interface.
+Developed a mobile-first full-stack Pokédex web app that lets users explore and interact with Pokémon data through an AI-powered interface. The frontend, hosted on Vercel and developed with Next.js, TypeScript, and Tailwind CSS, provides a responsive and dynamic Pokédex-like experience.
 
----
-
-## Overview
-The app provides a dynamic, responsive Pokédex experience with AI-generated Pokémon insights. Users can browse Pokémon, get detailed stats, and receive natural language responses powered by OpenAI’s API.
+The backend, built with Flask, integrates OpenAI’s API to generate natural Pokémon responses and uses pandas for structured data handling from a CSV-based Pokédex dataset. Hosted on Render, the backend communicates securely with the Vercel-hosted frontend via configured CORS to handle cross-origin requests.
 
 ---
 
@@ -22,6 +19,11 @@ The app provides a dynamic, responsive Pokédex experience with AI-generated Pok
 - **Frontend:** Next.js, TypeScript, Tailwind CSS (hosted on Vercel)  
 - **Backend:** Flask, OpenAI API, pandas (hosted on Render)  
 - **Deployment:** Vercel (frontend), Render (backend)  
+
+---
+
+## Note
+The backend is hosted on Render’s free tier, which may go into “sleep mode” when not in use. If the server has been idle, the first request may take 10–30 seconds to wake up before responding. After that, performance is normal.
 
 ---
 
